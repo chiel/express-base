@@ -1,0 +1,27 @@
+{
+	"name": "express-base",
+	"version": "0.0.1-dev",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/chielkunkels/express-base.git"
+	},
+	"author": "Chiel Kunkels <chiel@kunkels.me>",
+	"main": "app.js",
+	"dependencies": {
+		"body-parser": "1.6",
+		"connect-slashes": "1.2",
+		"consolidate": "0.9",
+		"express": "4.7",
+		"mout": "0.9",
+		"serve-static": "1.4",
+		"swig": "1.1"
+	},
+	"devDependencies": {
+		"grunt": "~0.4.2",
+		"grunt-concurrent": "0.4",
+		"grunt-contrib-watch": "0.5",
+		"grunt-mkdir": "0.1",
+		"grunt-nodemon": "~0.1.2",
+		"grunt-sass": "0.14"
+	}
+}
