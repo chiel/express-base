@@ -1,7 +1,19 @@
 'use strict';
 
+var fs = require('fs');
+
 module.exports = function(grunt){
-	grunt.initConfig({
+	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+
+	var config = {
+		mkdir: {
+			all: {
+				options: {
+					create: ['public/css']
+				}
+			}
+		},
+
 		concurrent: {
 			dev: {
 				tasks: ['nodemon', 'watch'],
@@ -11,45 +23,61 @@ module.exports = function(grunt){
 			}
 		},
 
-		mkdir: {
-			all: {
-				options: {
-					create: ['public/css']
-				}
-			}
-		},
+		sass: {},
 
 		nodemon: {
 			dev: {}
 		},
 
-		sass: {
-			dev: {
-				files: {
-					'public/css/main.css': 'src/css/main.scss'
-				}
-			}
-		},
+		watch: {}
+	};
 
-		watch: {
-			css: {
-				files: [
-					'src/css/*.scss', 'src/css/**/*.scss'
-				],
-				tasks: ['sass:dev']
+	var readCssDir = function(dir, target){
+		if (!fs.existsSync(dir)) return;
+
+		var count = 0, hasSubdirs, filePath,
+			name, input, output, globs;
+
+		fs.readdirSync(dir)
+		.forEach(function(fileName){
+			if (/^_/.test(fileName)) return;
+
+			if (!config.sass[target]){
+				config.sass[target] = {files: {}};
 			}
+
+			filePath = dir + '/' + fileName;
+			if (fs.statSync(filePath).isDirectory()){
+				hasSubdirs = true;
+				return;
+			}
+
+			name = fileName.match(/(.*)\.scss/)[1];
+			input = dir + '/' + name + '.scss';
+			output = 'public/css/' + name + '.css';
+			config.sass[target].files[output] = input;
+			count ++;
+		});
+
+		if (count > 0){
+			globs = [dir + '/*.scss'];
+			if (hasSubdirs){
+				globs.push(dir + '/**/*.scss');
+			}
+			config.watch[target] = {
+				files: globs,
+				tasks: ['sass:' + target]
+			};
 		}
-	});
+	};
 
-	grunt.loadNpmTasks('grunt-concurrent');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-mkdir');
-	grunt.loadNpmTasks('grunt-nodemon');
-	grunt.loadNpmTasks('grunt-sass');
+	readCssDir(__dirname + '/src/css', 'base');
+
+	grunt.initConfig(config);
 
 	grunt.registerTask('default', [
 		'mkdir',
-		'sass:dev',
+		'sass',
 		'concurrent:dev'
 	]);
 };

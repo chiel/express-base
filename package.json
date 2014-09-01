@@ -24,6 +24,7 @@
 		"grunt-contrib-watch": "0.5",
 		"grunt-mkdir": "0.1",
 		"grunt-nodemon": "~0.1.2",
-		"grunt-sass": "0.14"
+		"grunt-sass": "0.14",
+		"matchdep": "0.3"
 	}
 }
