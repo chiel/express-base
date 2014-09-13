@@ -9,11 +9,21 @@ var fs = require('fs'),
 
 if (isString(config.listen)){
 	server.on('error', function(e){
-		if (e.code != 'EADDRINUSE') return;
+		if (e.code != 'EADDRINUSE'){
+			console.error('Unknown error: ', e);
+			process.exit(1);
+		}
 
 		var clientSocket = new net.Socket();
 		clientSocket.on('error', function(e){
-			if (e.code != 'ECONNREFUSED') return;
+			if (e.code == 'EACCES'){
+				console.error('Unable to access socket file');
+				process.exit(1);
+			}
+			if (e.code != 'ECONNREFUSED' && e.code != 'EACCES'){
+				console.error('Unknown error: ', e);
+				process.exit(1);
+			}
 
 			fs.unlinkSync(config.listen);
 			server.listen(config.listen);
@@ -26,7 +36,10 @@ if (isString(config.listen)){
 	});
 } else {
 	server.on('error', function(e){
-		if (e.code != 'EADDRINUSE') return;
+		if (e.code != 'EADDRINUSE'){
+			console.error('Unknown error: ', e);
+			process.exit(1);
+		}
 
 		console.error('Port %d is in use, exiting...', config.listen);
 		process.exit(1);
