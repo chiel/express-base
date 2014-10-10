@@ -4,7 +4,7 @@ var swig = require('swig'),
 	app = require('./app');
 
 app
-	.engine('html', require('consolidate').swig)
+	.engine('html', swig.renderFile)
 	.set('view engine', 'html')
 	.set('views', process.cwd() + '/views')
 	.enable('strict routing');
